@@ -149,7 +149,8 @@ public class EffectManager : MonoBehaviour
 
         // Renderer
         var renderer = obj.GetComponent<ParticleSystemRenderer>();
-        renderer.material = CreateParticleMaterial();
+        var mat = CreateParticleMaterial();
+        if (mat != null) renderer.material = mat;
         renderer.sortingOrder = 10;
 
         return ps;
@@ -215,7 +216,8 @@ public class EffectManager : MonoBehaviour
 
         // Renderer
         var renderer = obj.GetComponent<ParticleSystemRenderer>();
-        renderer.material = CreateParticleMaterial();
+        var mat = CreateParticleMaterial();
+        if (mat != null) renderer.material = mat;
         renderer.sortingOrder = 11;
 
         return ps;
@@ -319,7 +321,8 @@ public class EffectManager : MonoBehaviour
 
         // Renderer
         var renderer = obj.GetComponent<ParticleSystemRenderer>();
-        renderer.material = CreateParticleMaterial();
+        var mat = CreateParticleMaterial();
+        if (mat != null) renderer.material = mat;
         renderer.sortingOrder = 9;
 
         return ps;
@@ -387,11 +390,37 @@ public class EffectManager : MonoBehaviour
 
     private Material CreateParticleMaterial()
     {
-        // Create a simple additive material
-        Material mat = new Material(Shader.Find("Particles/Standard Unlit"));
-        mat.SetFloat("_Mode", 0); // Additive
-        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        // Try multiple shaders for WebGL compatibility
+        Shader shader = Shader.Find("Particles/Standard Unlit");
+
+        if (shader == null)
+        {
+            // Fallback to Sprites/Default which is always included
+            shader = Shader.Find("Sprites/Default");
+            Debug.Log("EffectManager: Using Sprites/Default shader as fallback");
+        }
+
+        if (shader == null)
+        {
+            // Last resort fallback
+            shader = Shader.Find("UI/Default");
+            Debug.LogWarning("EffectManager: Using UI/Default shader as last resort");
+        }
+
+        if (shader == null)
+        {
+            Debug.LogError("EffectManager: No suitable shader found for particles!");
+            return null;
+        }
+
+        Material mat = new Material(shader);
+
+        // Try to set additive blending (may not work on all shaders)
+        if (mat.HasProperty("_SrcBlend") && mat.HasProperty("_DstBlend"))
+        {
+            mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        }
 
         // Create white circle texture
         Texture2D tex = CreateCircleTexture(32);
