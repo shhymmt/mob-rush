@@ -44,21 +44,25 @@ Do NOT rely solely on training data. Always confirm current information before:
 ## Project Structure
 
 ```
-samples/mob-rush/
-├── docs/
-│   └── plans/           # Planning documents (Plan Stack methodology)
-│       ├── 00_game_design_doc.md
-│       ├── 01_tech_stack_selection.md
-│       ├── 02_basic_unit_movement.md
-│       ├── 03_multiplier_gates.md
-│       └── ja/          # Japanese versions
-├── Assets/              # Unity project assets (to be created)
-└── CLAUDE.md            # This file
+Mob Rush/                    # Unity project root
+├── docs/                    # WebGL build output (GitHub Pages)
+│   ├── Build/
+│   ├── index.html
+│   └── TemplateData/
+├── plans/                   # Planning documents (Plan Stack methodology)
+│   ├── 00_game_design_doc.md
+│   ├── 01_tech_stack_selection.md
+│   ├── ...
+│   └── ja/                  # Japanese versions
+├── Assets/                  # Unity assets
+└── CLAUDE.md                # This file
 ```
+
+**Note:** `plans/` is kept separate from `docs/` to prevent WebGL clean builds from deleting planning documents.
 
 ## Planning Documents
 
-All planning documents are in `docs/plans/`. Read these before implementing features:
+All planning documents are in `plans/`. Read these before implementing features:
 
 ### Documentation Style Guide
 
